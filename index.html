@@ -9,12 +9,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
+        
+        /* Estilos de Impressão Corrigidos */
         @media print {
             @page { size: A4; margin: 0; }
-            body { background: white !important; -webkit-print-color-adjust: exact; }
+            body { background: white !important; -webkit-print-color-adjust: exact; margin: 0; padding: 0; }
             .no-print { display: none !important; }
-            .print-area { margin: 0 !important; box-shadow: none !important; border: none !important; }
+            
+            /* Garante que o modal de impressão ocupe a página toda sem o fundo escuro */
+            #printModal { 
+                position: absolute !important; 
+                display: block !important; 
+                background: white !important; 
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                visibility: visible !important;
+            }
+            
+            #printModal * { visibility: visible !important; }
+            
+            .print-area { 
+                margin: 0 !important; 
+                box-shadow: none !important; 
+                border: none !important; 
+                width: 210mm !important;
+                min-height: 297mm !important;
+                padding: 15mm !important;
+            }
+            
+            /* Esconde especificamente o header do modal na impressão */
+            .modal-header-actions { display: none !important; }
         }
+
         .upside-down { transform: rotate(180deg); }
         .bg-pattern { background-image: radial-gradient(#10b981 0.5px, transparent 0.5px); background-size: 10px 10px; }
     </style>
@@ -61,11 +89,11 @@
         </div>
     </main>
 
-    <!-- Modal de Impressão -->
-    <div id="printModal" class="fixed inset-0 z-50 hidden bg-slate-900/90 backdrop-blur-md p-4 overflow-y-auto no-print">
+    <!-- Modal de Impressão (Removido no-print do contentor principal) -->
+    <div id="printModal" class="fixed inset-0 z-50 hidden bg-slate-900/90 backdrop-blur-md p-4 overflow-y-auto">
         <div class="bg-white w-full max-w-4xl min-h-[95vh] my-auto rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl">
-            <!-- Header Modal -->
-            <div class="p-5 border-b flex items-center justify-between bg-white">
+            <!-- Header Modal (Com classe para esconder na impressão) -->
+            <div class="p-5 border-b flex items-center justify-between bg-white modal-header-actions no-print">
                 <div class="flex items-center gap-4">
                     <div class="bg-emerald-600 p-2.5 rounded-2xl text-white">
                         <i data-lucide="printer"></i>
@@ -86,23 +114,23 @@
             </div>
 
             <!-- Área da Folha A4 Simulado -->
-            <div class="flex-1 p-8 bg-slate-100 overflow-y-auto">
+            <div class="flex-1 p-8 bg-slate-100 overflow-y-auto print:p-0">
                 <div id="printContent" class="bg-white w-full max-w-[210mm] mx-auto min-h-[297mm] p-12 flex flex-col border-2 border-black shadow-2xl print-area">
-                    <!-- Dinâmico -->
+                    <!-- Conteúdo Dinâmico -->
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Configurações
+        // Configurações e Banco de Dados
         const bibleThemes = [
             { title: "A Criação", verse: "DEUS CRIOU O MUNDO", ref: "Génesis 1:1", keywords: ["LUZ", "TERRA", "MAR", "SOL"], person: "DEUS", quiz: ["O que Deus criou no primeiro dia?", "Quem fez as estrelas?"] },
             { title: "O Dilúvio", verse: "NOÉ FEZ A ARCA", ref: "Génesis 7:5", keywords: ["ARCA", "CHUVA", "BICHO", "PAZ"], person: "NOÉ", quiz: ["Quantos dias choveu?", "Qual animal trouxe o ramo?"] },
             { title: "O Gigante", verse: "DAVI VENCEU GOLIAS", ref: "1 Samuel 17:37", keywords: ["PEDRA", "FUNDA", "REI", "FÉ"], person: "DAVI", quiz: ["O que Davi usou para vencer?", "Quem era o gigante?"] },
             { title: "Daniel", verse: "DEUS FECHOU OS LEÕES", ref: "Daniel 6:22", keywords: ["LEÃO", "COVA", "REI", "ORAÇÃO"], person: "DANIEL", quiz: ["Para onde Daniel foi atirado?", "Quem o protegeu?"] },
             { title: "Zaqueu", verse: "JESUS ENTROU NA CASA", ref: "Lucas 19", keywords: ["ÁRVORE", "CASA", "DINHEIRO", "ALTO"], person: "ZAQUEU", quiz: ["Onde Zaqueu subiu?", "Jesus jantou com quem?"] },
-            { title: "Jonas", verse: "O PEIXE ENGOLIU JONAS", ref: "Jonas 2", keywords: ["PEIXE", "MAR", "BARCO", "ORAÇÃO"], person: "JONAS", quiz: ["Quantos dias Jonas ficou no peixe?", "Para onde ele fugiu?"] },
+            { title: "Jonas", verse: "O PEIXE ENGOLIU JONAS", ref: "Jonas 2:1", keywords: ["PEIXE", "MAR", "BARCO", "ORAÇÃO"], person: "JONAS", quiz: ["Quantos dias Jonas ficou no peixe?", "Para onde ele fugiu?"] },
             { title: "Nascimento", verse: "JESUS NASCEU EM BELÉM", ref: "Mateus 1", keywords: ["ANJO", "ESTRELA", "PAZ", "LUZ"], person: "JESUS", quiz: ["Onde Jesus nasceu?", "Quem seguiu a estrela?"] }
         ];
 
@@ -114,7 +142,7 @@
         let searchQuery = '';
         const activities = [];
 
-        // Gerar 150
+        // Gerar 150 lições únicas
         for (let i = 1; i <= 150; i++) {
             const theme = bibleThemes[i % bibleThemes.length];
             const type = types[i % types.length];
@@ -134,7 +162,6 @@
             });
         }
 
-        // Renderização
         function render() {
             const grid = document.getElementById('activitiesGrid');
             grid.innerHTML = '';
@@ -194,7 +221,6 @@
             render();
         };
 
-        // Modal e Impressão
         function openModal(a) {
             const modal = document.getElementById('printModal');
             document.getElementById('modalTitle').innerText = a.title;
@@ -205,7 +231,7 @@
                 <div class="border-[4px] border-black p-6 mb-8 bg-white">
                     <div class="flex justify-between items-center mb-6">
                         <h1 class="text-2xl font-black uppercase tracking-tighter text-black">Aventureiros da Fé!</h1>
-                        <div class="text-xs font-bold border-2 border-black px-4 py-1.5 bg-black text-white">LIÇÃO Nº ${a.id}</div>
+                        <div class="text-xs font-bold border-2 border-black px-4 py-1.5 bg-black text-white uppercase">Atividade Nº ${a.id}</div>
                     </div>
                     <div class="space-y-5 text-sm font-black">
                         <div class="border-b-2 border-black pb-1 uppercase flex">ALUNO(A): <span class="flex-1 ml-2 font-normal">_____________________________________</span></div>
@@ -232,7 +258,7 @@
         }
 
         function getInstr(type) {
-            const map = { "Caça-Palavras": "Circunda as palavras na grelha.", "Quiz": "Marca um X na resposta certa.", "Letras Embaralhadas": "Ordena as letras para descobrires o nome.", "Quem Sou Eu?": "Adivinha quem sou. Resposta invertida no fundo.", "Versículo Enigmático": "Decifra o código secreto.", "Intruso": "Circunda o que não existia na Bíblia." };
+            const map = { "Caça-Palavras": "Circunda as palavras na grelha.", "Quiz": "Marca um X na resposta certa.", "Letras Embaralhadas": "Ordena as letras para descobrires o nome.", "Quem Sou Eu?": "Adivinha quem sou. Resposta invertida no fundo.", "Versículo Enigmático": "Substitui os símbolos pelas letras.", "Intruso": "Circunda o que não existia na Bíblia." };
             return map[type];
         }
 
@@ -250,8 +276,8 @@
                     qHtml += `<div class="space-y-10">
                         <p class="font-black text-3xl uppercase leading-tight border-l-[12px] border-black pl-8">${idx + 1}. ${q}</p>
                         <div class="space-y-6 pl-14">
-                            <div class="flex items-center gap-8 font-black text-2xl uppercase"><div class="w-10 h-10 border-[4px] border-black rounded-full shrink-0"></div><span class="border-b-2 border-black/10 pb-1 flex-1">${a.theme.person}</span></div>
-                            <div class="flex items-center gap-8 font-black text-2xl uppercase"><div class="w-10 h-10 border-[4px] border-black rounded-full shrink-0"></div><span class="border-b-2 border-black/10 pb-1 flex-1">Outro Personagem</span></div>
+                            <div class="flex items-center gap-8 font-black text-2xl uppercase"><div class="w-10 h-10 border-[4px] border-black rounded-full shrink-0"></div><span class="border-b-2 border-black/10 pb-1 flex-1 uppercase">${a.theme.person}</span></div>
+                            <div class="flex items-center gap-8 font-black text-2xl uppercase"><div class="w-10 h-10 border-[4px] border-black rounded-full shrink-0"></div><span class="border-b-2 border-black/10 pb-1 flex-1 uppercase">Outro Personagem</span></div>
                         </div>
                     </div>`;
                 });
@@ -259,9 +285,9 @@
             }
             if(a.type === 'Quem Sou Eu?') {
                 let cHtml = '<div class="max-w-2xl mx-auto space-y-10 mt-6">';
-                [1,2,3].forEach(i => cHtml += `<div class="flex items-start gap-8 p-7 border-[4px] border-black font-black text-2xl uppercase leading-tight bg-white"><span class="text-emerald-600 text-4xl">0${i}.</span> Pista de exemplo sobre a história.</div>`);
-                cHtml += '<div class="pt-16 border-t-4 border-black text-center"><p class="font-black uppercase mb-10 text-3xl tracking-tighter">Escreve aqui o meu nome:</p><div class="w-full h-20 border-b-[6px] border-black"></div></div></div>';
-                cHtml += `<div class="mt-24 pt-6 flex flex-col items-center upside-down opacity-20 border-t border-dashed border-black/20"><span class="text-[10px] font-bold uppercase tracking-[0.5em]">Gabarito:</span><span class="text-sm font-black uppercase">${a.theme.person}</span></div>`;
+                [1,2,3].forEach(i => cHtml += `<div class="flex items-start gap-8 p-7 border-[4px] border-black font-black text-2xl uppercase leading-tight bg-white"><span class="text-emerald-600 text-4xl">0${i}.</span> Pista de exemplo sobre esta história bíblica.</div>`);
+                cHtml += '<div class="pt-16 border-t-4 border-black text-center"><p class="font-black uppercase mb-10 text-3xl tracking-tighter text-black">Escreve aqui o meu nome:</p><div class="w-full h-20 border-b-[6px] border-black"></div></div></div>';
+                cHtml += `<div class="mt-24 pt-6 flex flex-col items-center upside-down opacity-20 border-t border-dashed border-black/20"><span class="text-[10px] font-bold uppercase tracking-[0.5em]">Gabarito Invertido:</span><span class="text-sm font-black uppercase">${a.theme.person}</span></div>`;
                 return cHtml;
             }
             if(a.type === 'Intruso') {
@@ -285,7 +311,7 @@
             }
             if(a.type === 'Letras Embaralhadas') {
                 const scrambled = a.theme.person.toUpperCase().split('').sort(() => Math.random() - 0.5).join(' ');
-                let aHtml = `<div class="space-y-20 mt-12 w-full text-center"><div class="p-12 border-[4px] border-black bg-slate-50 inline-block px-20"><span class="text-7xl font-black tracking-[2rem] uppercase ml-[2rem]">${scrambled}</span></div><div class="space-y-10"><p class="font-black text-2xl uppercase italic opacity-40">DICA: Herói da história de ${a.theme.title}</p><div class="flex justify-center gap-6">`;
+                let aHtml = `<div class="space-y-20 mt-12 w-full text-center"><div class="p-12 border-[4px] border-black bg-slate-50 inline-block px-20"><span class="text-7xl font-black tracking-[2rem] uppercase ml-[2rem]">${scrambled}</span></div><div class="space-y-10"><p class="font-black text-2xl uppercase italic opacity-40 uppercase">DICA: Herói da história de ${a.theme.title}</p><div class="flex justify-center gap-6">`;
                 a.theme.person.split('').forEach(() => aHtml += '<div class="w-16 h-1.5 bg-black"></div>');
                 return aHtml + '</div></div></div>';
             }
@@ -298,7 +324,6 @@
 
         window.onclick = (e) => { if(e.target == document.getElementById('printModal')) closeModal(); }
 
-        // Inicializar
         render();
     </script>
 </body>
