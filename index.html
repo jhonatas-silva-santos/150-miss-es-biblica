@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aventureiros da Fé! - 150 Atividades</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @media print {
+            @page { size: A4; margin: 0; }
+            body { background: white !important; -webkit-print-color-adjust: exact; }
+            .no-print { display: none !important; }
+            .print-area { margin: 0 !important; box-shadow: none !important; border: none !important; }
+        }
+        .upside-down { transform: rotate(180deg); }
+        .bg-pattern { background-image: radial-gradient(#10b981 0.5px, transparent 0.5px); background-size: 10px 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 selection:bg-emerald-100">
+
+    <!-- Navegação -->
+    <nav class="bg-white border-b-[6px] border-emerald-600 sticky top-0 z-40 px-6 py-5 shadow-2xl no-print">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-5 shrink-0">
+                <div class="bg-emerald-600 p-3 rounded-2xl text-white shadow-2xl shadow-emerald-200">
+                    <i data-lucide="layout-grid" class="w-8 h-8"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-black text-slate-800 tracking-tighter leading-none">Aventureiros da Fé!</h1>
+                    <span class="text-[11px] font-black text-emerald-500 uppercase tracking-[0.3em]">150 Atividades Pack</span>
+                </div>
+            </div>
+            
+            <div class="relative flex-1 max-w-xl w-full">
+                <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+                <input 
+                    type="text" 
+                    id="searchInput"
+                    placeholder="Pesquisar lição, tema ou herói bíblico..."
+                    class="w-full bg-slate-50 border-[3px] border-slate-100 rounded-[2rem] py-4 pl-16 pr-8 focus:bg-white focus:border-emerald-600 transition-all outline-none text-base font-bold shadow-inner"
+                >
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 no-print">
+        <!-- Filtros -->
+        <div class="flex flex-wrap gap-4 mb-16 justify-center">
+            <button onclick="setFilter('Tudo')" class="filter-btn active px-10 py-4 rounded-[2rem] text-sm font-black uppercase tracking-widest transition-all border-[4px] shadow-2xl bg-emerald-600 text-white border-emerald-600 -translate-y-2">Ver Todas</button>
+            <button onclick="setFilter('4-6')" class="filter-btn px-10 py-4 rounded-[2rem] text-sm font-black uppercase tracking-widest transition-all border-[4px] shadow-2xl bg-white text-slate-400 border-white hover:border-emerald-200">4-6 Anos</button>
+            <button onclick="setFilter('7-10')" class="filter-btn px-10 py-4 rounded-[2rem] text-sm font-black uppercase tracking-widest transition-all border-[4px] shadow-2xl bg-white text-slate-400 border-white hover:border-emerald-200">7-10 Anos</button>
+            <button onclick="setFilter('11-14')" class="filter-btn px-10 py-4 rounded-[2rem] text-sm font-black uppercase tracking-widest transition-all border-[4px] shadow-2xl bg-white text-slate-400 border-white hover:border-emerald-200">11-14 Anos</button>
+        </div>
+
+        <!-- Grid de Cards -->
+        <div id="activitiesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10">
+            <!-- Renderizado via JS -->
+        </div>
+    </main>
+
+    <!-- Modal de Impressão -->
+    <div id="printModal" class="fixed inset-0 z-50 hidden bg-slate-900/90 backdrop-blur-md p-4 overflow-y-auto no-print">
+        <div class="bg-white w-full max-w-4xl min-h-[95vh] my-auto rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl">
+            <!-- Header Modal -->
+            <div class="p-5 border-b flex items-center justify-between bg-white">
+                <div class="flex items-center gap-4">
+                    <div class="bg-emerald-600 p-2.5 rounded-2xl text-white">
+                        <i data-lucide="printer"></i>
+                    </div>
+                    <div>
+                        <h2 id="modalTitle" class="font-black text-slate-800 tracking-tight">Título</h2>
+                        <p id="modalSubtitle" class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Tipo</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="window.print()" class="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-black text-sm hover:bg-emerald-700 transition-all flex items-center gap-2">
+                        Imprimir Agora
+                    </button>
+                    <button onclick="closeModal()" class="p-3 text-slate-400 hover:bg-slate-100 rounded-full">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Área da Folha A4 Simulado -->
+            <div class="flex-1 p-8 bg-slate-100 overflow-y-auto">
+                <div id="printContent" class="bg-white w-full max-w-[210mm] mx-auto min-h-[297mm] p-12 flex flex-col border-2 border-black shadow-2xl print-area">
+                    <!-- Dinâmico -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações
+        const bibleThemes = [
+            { title: "A Criação", verse: "DEUS CRIOU O MUNDO", ref: "Génesis 1:1", keywords: ["LUZ", "TERRA", "MAR", "SOL"], person: "DEUS", quiz: ["O que Deus criou no primeiro dia?", "Quem fez as estrelas?"] },
+            { title: "O Dilúvio", verse: "NOÉ FEZ A ARCA", ref: "Génesis 7:5", keywords: ["ARCA", "CHUVA", "BICHO", "PAZ"], person: "NOÉ", quiz: ["Quantos dias choveu?", "Qual animal trouxe o ramo?"] },
+            { title: "O Gigante", verse: "DAVI VENCEU GOLIAS", ref: "1 Samuel 17:37", keywords: ["PEDRA", "FUNDA", "REI", "FÉ"], person: "DAVI", quiz: ["O que Davi usou para vencer?", "Quem era o gigante?"] },
+            { title: "Daniel", verse: "DEUS FECHOU OS LEÕES", ref: "Daniel 6:22", keywords: ["LEÃO", "COVA", "REI", "ORAÇÃO"], person: "DANIEL", quiz: ["Para onde Daniel foi atirado?", "Quem o protegeu?"] },
+            { title: "Zaqueu", verse: "JESUS ENTROU NA CASA", ref: "Lucas 19", keywords: ["ÁRVORE", "CASA", "DINHEIRO", "ALTO"], person: "ZAQUEU", quiz: ["Onde Zaqueu subiu?", "Jesus jantou com quem?"] },
+            { title: "Jonas", verse: "O PEIXE ENGOLIU JONAS", ref: "Jonas 2", keywords: ["PEIXE", "MAR", "BARCO", "ORAÇÃO"], person: "JONAS", quiz: ["Quantos dias Jonas ficou no peixe?", "Para onde ele fugiu?"] },
+            { title: "Nascimento", verse: "JESUS NASCEU EM BELÉM", ref: "Mateus 1", keywords: ["ANJO", "ESTRELA", "PAZ", "LUZ"], person: "JESUS", quiz: ["Onde Jesus nasceu?", "Quem seguiu a estrela?"] }
+        ];
+
+        const types = ["Caça-Palavras", "Quiz", "Letras Embaralhadas", "Quem Sou Eu?", "Versículo Enigmático", "Intruso"];
+        const codeMap = { "🍎":"A","⭐":"E","💧":"I","☀️":"O","🌙":"U","🍀":"R","💎":"S","⚓":"N","☁️":"C","⛰️":"T","🔥":"F" };
+        const intruderPool = [ ["🔥 Fogo", "📜 Rolo", "🛡️ Escudo", "🚗 Carro"], ["🚢 Barco", "⚓ Âncora", "🐟 Peixe", "📱 Telemóvel"] ];
+
+        let currentFilter = 'Tudo';
+        let searchQuery = '';
+        const activities = [];
+
+        // Gerar 150
+        for (let i = 1; i <= 150; i++) {
+            const theme = bibleThemes[i % bibleThemes.length];
+            const type = types[i % types.length];
+            const ages = ["4-6", "7-10", "11-14"];
+            
+            let displayTitle = `${theme.title} - Desafio ${i}`;
+            if (type === "Letras Embaralhadas") displayTitle = `Desafio de Letras #${i}`;
+            if (type === "Quem Sou Eu?") displayTitle = `Quem é o Personagem? #${i}`;
+
+            activities.push({
+                id: i,
+                title: displayTitle,
+                type: type,
+                ageRange: ages[i % 3],
+                theme: theme,
+                intruders: intruderPool[i % intruderPool.length]
+            });
+        }
+
+        // Renderização
+        function render() {
+            const grid = document.getElementById('activitiesGrid');
+            grid.innerHTML = '';
+
+            const filtered = activities.filter(a => {
+                const matchesAge = currentFilter === 'Tudo' || a.ageRange === currentFilter;
+                const matchesSearch = a.title.toLowerCase().includes(searchQuery.toLowerCase()) || a.theme.title.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesAge && matchesSearch;
+            });
+
+            filtered.forEach(a => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-3xl shadow-sm hover:shadow-2xl transition-all cursor-pointer overflow-hidden border border-slate-100 flex flex-col group";
+                card.onclick = () => openModal(a);
+                
+                const ageColor = a.ageRange === '4-6' ? 'bg-emerald-400' : a.ageRange === '7-10' ? 'bg-orange-400' : 'bg-emerald-600';
+                
+                card.innerHTML = `
+                    <div class="h-32 bg-slate-50 flex items-center justify-center border-b border-slate-100 relative">
+                        <div class="absolute top-2 right-3 text-[10px] font-black text-emerald-200">#${String(a.id).padStart(3, '0')}</div>
+                        <div class="text-emerald-500"><i data-lucide="${getIcon(a.type)}" class="w-8 h-8"></i></div>
+                    </div>
+                    <div class="p-4 flex-1 flex flex-col">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[9px] font-black px-2 py-0.5 rounded-full text-white ${ageColor}">${a.ageRange} ANOS</span>
+                            <span class="text-[9px] font-bold text-slate-300 uppercase">${a.type}</span>
+                        </div>
+                        <h3 class="text-sm font-bold text-slate-800 mb-1 leading-tight line-clamp-2">${a.title}</h3>
+                        <div class="flex items-center text-emerald-600 text-[10px] font-black uppercase tracking-widest pt-3 mt-auto border-t border-slate-50 group-hover:text-emerald-800">
+                            <i data-lucide="printer" class="w-3 h-3 mr-1"></i> Imprimir
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function getIcon(type) {
+            const map = { "Caça-Palavras": "grid-3x3", "Quiz": "help-circle", "Letras Embaralhadas": "type", "Quem Sou Eu?": "user", "Versículo Enigmático": "lock", "Intruso": "ban" };
+            return map[type] || "book";
+        }
+
+        function setFilter(age) {
+            currentFilter = age;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn px-10 py-4 rounded-[2rem] text-sm font-black uppercase tracking-widest transition-all border-[4px] shadow-2xl bg-white text-slate-400 border-white hover:border-emerald-200";
+                if(btn.innerText.includes(age) || (age === 'Tudo' && btn.innerText === 'Ver Todas')) {
+                    btn.className = "filter-btn active px-10 py-4 rounded-[2rem] text-sm font-black uppercase tracking-widest transition-all border-[4px] shadow-2xl bg-emerald-600 text-white border-emerald-600 -translate-y-2";
+                }
+            });
+            render();
+        }
+
+        document.getElementById('searchInput').oninput = (e) => {
+            searchQuery = e.target.value;
+            render();
+        };
+
+        // Modal e Impressão
+        function openModal(a) {
+            const modal = document.getElementById('printModal');
+            document.getElementById('modalTitle').innerText = a.title;
+            document.getElementById('modalSubtitle').innerText = a.type;
+            
+            const content = document.getElementById('printContent');
+            content.innerHTML = `
+                <div class="border-[4px] border-black p-6 mb-8 bg-white">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-2xl font-black uppercase tracking-tighter text-black">Aventureiros da Fé!</h1>
+                        <div class="text-xs font-bold border-2 border-black px-4 py-1.5 bg-black text-white">LIÇÃO Nº ${a.id}</div>
+                    </div>
+                    <div class="space-y-5 text-sm font-black">
+                        <div class="border-b-2 border-black pb-1 uppercase flex">ALUNO(A): <span class="flex-1 ml-2 font-normal">_____________________________________</span></div>
+                        <div class="flex gap-12 text-xs">
+                            <div class="border-b-2 border-black pb-1 flex-[2] uppercase flex">DATA: <span class="flex-1 ml-2 font-normal">____/____/____</span></div>
+                            <div class="border-b-2 border-black pb-1 flex-[3] uppercase flex">PROFESSOR: <span class="flex-1 ml-2 font-normal">________________</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-black text-white p-3 mb-10 text-[11px] font-black uppercase tracking-widest">INSTRUÇÕES: ${getInstr(a.type)}</div>
+                <div class="flex-1 flex flex-col items-center">
+                    <h2 class="text-5xl font-black text-center mb-3 uppercase tracking-tighter text-black">${a.title}</h2>
+                    ${(a.type !== 'Letras Embaralhadas' && a.type !== 'Quem Sou Eu?') ? `<p class="text-center font-bold italic mb-12 text-xl text-emerald-700 underline decoration-double">"${a.theme.ref}"</p>` : '<div class="h-12"></div>'}
+                    <div class="w-full">${renderActivityBody(a)}</div>
+                </div>
+                <div class="mt-auto pt-10 border-t-[4px] border-black flex justify-between items-center text-xs font-black uppercase tracking-[0.4em] text-slate-400">
+                    <span>AVENTUREIROS DA FÉ! • PACK 150</span>
+                    <span>EDUCANDO PARA A ETERNIDADE</span>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function getInstr(type) {
+            const map = { "Caça-Palavras": "Circunda as palavras na grelha.", "Quiz": "Marca um X na resposta certa.", "Letras Embaralhadas": "Ordena as letras para descobrires o nome.", "Quem Sou Eu?": "Adivinha quem sou. Resposta invertida no fundo.", "Versículo Enigmático": "Decifra o código secreto.", "Intruso": "Circunda o que não existia na Bíblia." };
+            return map[type];
+        }
+
+        function renderActivityBody(a) {
+            if(a.type === 'Caça-Palavras') {
+                let gridHtml = '<div class="grid grid-cols-10 border-[4px] border-black bg-white p-1 mx-auto w-fit mb-10">';
+                for(let i=0; i<100; i++) gridHtml += `<div class="w-14 h-14 border border-black/10 flex items-center justify-center font-black text-2xl uppercase">${"ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random()*26)]}</div>`;
+                gridHtml += '</div><div class="grid grid-cols-2 gap-8 border-[4px] border-black p-8 bg-slate-50">';
+                a.theme.keywords.forEach(w => gridHtml += `<span class="font-black uppercase tracking-[0.3em] text-lg flex items-center gap-4"><div class="w-6 h-6 border-2 border-black"></div> ${w}</span>`);
+                return gridHtml + '</div>';
+            }
+            if(a.type === 'Quiz') {
+                let qHtml = '<div class="space-y-16 px-10">';
+                a.theme.quiz.forEach((q, idx) => {
+                    qHtml += `<div class="space-y-10">
+                        <p class="font-black text-3xl uppercase leading-tight border-l-[12px] border-black pl-8">${idx + 1}. ${q}</p>
+                        <div class="space-y-6 pl-14">
+                            <div class="flex items-center gap-8 font-black text-2xl uppercase"><div class="w-10 h-10 border-[4px] border-black rounded-full shrink-0"></div><span class="border-b-2 border-black/10 pb-1 flex-1">${a.theme.person}</span></div>
+                            <div class="flex items-center gap-8 font-black text-2xl uppercase"><div class="w-10 h-10 border-[4px] border-black rounded-full shrink-0"></div><span class="border-b-2 border-black/10 pb-1 flex-1">Outro Personagem</span></div>
+                        </div>
+                    </div>`;
+                });
+                return qHtml + '</div>';
+            }
+            if(a.type === 'Quem Sou Eu?') {
+                let cHtml = '<div class="max-w-2xl mx-auto space-y-10 mt-6">';
+                [1,2,3].forEach(i => cHtml += `<div class="flex items-start gap-8 p-7 border-[4px] border-black font-black text-2xl uppercase leading-tight bg-white"><span class="text-emerald-600 text-4xl">0${i}.</span> Pista de exemplo sobre a história.</div>`);
+                cHtml += '<div class="pt-16 border-t-4 border-black text-center"><p class="font-black uppercase mb-10 text-3xl tracking-tighter">Escreve aqui o meu nome:</p><div class="w-full h-20 border-b-[6px] border-black"></div></div></div>';
+                cHtml += `<div class="mt-24 pt-6 flex flex-col items-center upside-down opacity-20 border-t border-dashed border-black/20"><span class="text-[10px] font-bold uppercase tracking-[0.5em]">Gabarito:</span><span class="text-sm font-black uppercase">${a.theme.person}</span></div>`;
+                return cHtml;
+            }
+            if(a.type === 'Intruso') {
+                let iHtml = '<div class="grid grid-cols-2 gap-16 mt-10 px-10">';
+                a.intruders.forEach(it => iHtml += `<div class="flex flex-col items-center border-[4px] border-black p-12 hover:bg-emerald-50 transition-colors"><div class="text-[10rem] mb-6 select-none">${it.split(' ')[0]}</div><div class="text-4xl font-black uppercase tracking-tighter">${it.split(' ')[1]}</div></div>`);
+                return iHtml + '</div>';
+            }
+            if(a.type === 'Versículo Enigmático') {
+                let eHtml = '<div class="grid grid-cols-6 sm:grid-cols-9 gap-3 border-[4px] border-black p-6 bg-slate-50 mb-10">';
+                Object.entries(codeMap).forEach(([sym, letr]) => eHtml += `<div class="flex flex-col items-center border-2 border-black/10 p-2 bg-white rounded-lg"><span class="text-3xl mb-1">${sym}</span><span class="font-black text-xl">= ${letr}</span></div>`);
+                eHtml += '</div><div class="flex flex-wrap justify-center gap-x-10 gap-y-16 mt-10">';
+                a.theme.verse.split(' ').forEach(word => {
+                    eHtml += '<div class="flex gap-3">';
+                    word.split('').forEach(char => {
+                        const sym = Object.entries(codeMap).find(e => e[1] === char.toUpperCase());
+                        eHtml += `<div class="flex flex-col items-center gap-2"><div class="h-16 flex items-center justify-center">${sym ? `<span class="text-5xl">${sym[0]}</span>` : `<span class="text-5xl font-black">${char}</span>`}</div><div class="w-12 h-1 bg-black"></div></div>`;
+                    });
+                    eHtml += '</div>';
+                });
+                return eHtml + '</div><div class="mt-24 w-full h-32 border-[4px] border-dashed border-black/10 flex items-center justify-center text-slate-300 font-black text-2xl uppercase">Escreve a mensagem decifrada aqui...</div>';
+            }
+            if(a.type === 'Letras Embaralhadas') {
+                const scrambled = a.theme.person.toUpperCase().split('').sort(() => Math.random() - 0.5).join(' ');
+                let aHtml = `<div class="space-y-20 mt-12 w-full text-center"><div class="p-12 border-[4px] border-black bg-slate-50 inline-block px-20"><span class="text-7xl font-black tracking-[2rem] uppercase ml-[2rem]">${scrambled}</span></div><div class="space-y-10"><p class="font-black text-2xl uppercase italic opacity-40">DICA: Herói da história de ${a.theme.title}</p><div class="flex justify-center gap-6">`;
+                a.theme.person.split('').forEach(() => aHtml += '<div class="w-16 h-1.5 bg-black"></div>');
+                return aHtml + '</div></div></div>';
+            }
+            return '';
+        }
+
+        function closeModal() {
+            document.getElementById('printModal').classList.add('hidden');
+        }
+
+        window.onclick = (e) => { if(e.target == document.getElementById('printModal')) closeModal(); }
+
+        // Inicializar
+        render();
+    </script>
+</body>
+</html>
